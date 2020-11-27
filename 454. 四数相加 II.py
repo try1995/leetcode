@@ -1,3 +1,5 @@
+import collections
+
 class Solution(object):
     def fourSumCount(self, A, B, C, D):
         """
@@ -7,17 +9,16 @@ class Solution(object):
         :type D: List[int]
         :rtype: int
         """
-        # TODO sort
-        count = 0
-        for i in A:
-            for j in B:
-                for k in C:
-                    for m in D:
-                        if i + j + k + m == 0:
-                            count += 1
-        return count
+        countAB = collections.Counter(u + v for u in A for v in B)
+        ans = 0
+        for u in C:
+            for v in D:
+                if -u - v in countAB:
+                    ans += countAB[-u - v]
+        return ans
+
 
 
 s = Solution()
-data = s.fourSumCount(A=[1, 2], B=[-2, -1], C=[-1, 2], D=[0, 2])
+data = s.fourSumCount(A=[1, 2], B=[-2, -1], C=[-1, 2], D=[2, 0])
 print(data)
