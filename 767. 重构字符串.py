@@ -7,24 +7,22 @@ class Solution(object):
         :type S: str
         :rtype: str
         """
+        res = [""] * len(S)
+        tmp = []
         count = Counter(S)
         count = sorted(count.items(), key=lambda x: x[1])
-        if len(count) < 2:
+        if count[-1][1] > (len(S) + 1) // 2:
             return ""
-        queue = []
-        while count:
-            queue.append(count[0][0])
-            queue.append(count[1][0])
-            for i in range(len(count)-1):
-                if count[i][1] < count[i+1][1]:
-                    temp = count[i]
-                    count[i] = count[i+1]
-                    count[i+1] = temp
-                else:
-                    break
-        return "".join(queue)
+        for key, value in count:
+            tmp.extend(key * value)
+
+        # 单号和双号
+        # 单号排temp左半边的元素，双号排temp右半边的元素
+        res[::2], res[1::2] = tmp[len(S) // 2:], tmp[:len(S) // 2]
+
+        return ''.join(res)
 
 
 s = Solution()
-data = s.reorganizeString("apyvzaaaabaaruraaaadwabldaralasahaaamrsaaaaaaaxaauwaaaafavaaabqieqkauyxgawdiabajakxmaaaawhabzaabaiahaaaarxmvamaanalaadahwbaadtarazjjavbswkaaaaacoaaakaazaramftialshqaaamlvhaankeaaaaaavayzadaaasathjaaanyaakrhueaiamaafapvaaaaeauaacyaaaroawaoaaadaagaaugkaaaamabbduaaacaaxaataauuaeaoaiqtlaaqqtarlaaaaajcaaaajgcgaodaadaoqasaaaalesaaapaascacavwdnnasxaayatawvikazaaadajatasanaaaamapuaavtaaseadzvaxaaaaapoaapsaaakraaakaiafataaaaaaaxljmgaaaavhaaalaeaaaazayazqaekqykzaaabsybvdxxvbaaaaajvaaidntlaagaaajzaleataek")
+data = s.reorganizeString("aab")
 print(data)
