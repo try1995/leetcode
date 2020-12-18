@@ -5,6 +5,7 @@ class Solution(object):
         :type fee: int
         :rtype: int
         """
+        # 定义状态dp[i][0] 表示第i天交易完后手里没有股票的最大利润，dp[i][1] 表示第i天交易完后手里持有一支股票的最大利润（i从 00 开始）
         n = len(prices)
         dp = [[0, -prices[0]]] + [[0, 0] for _ in range(n - 1)]
         for i in range(1, n):
