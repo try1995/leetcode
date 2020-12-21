@@ -190,3 +190,6 @@ class LstmNetwork():
             h_prev = self.lstm_node_list[idx - 1].state.h
             self.lstm_node_list[idx].bottom_data_is(x, s_prev, h_prev)
 
+if __name__ == "__main__":
+    a = LstmParam(2,5)
+    print(a)
