@@ -8,10 +8,12 @@ def sigmoid(x):
     return 1. / (1 + np.exp(-x))
 
 
+# sigmoid函数的导数是f'(x)=f(x)(1−f(x))​
 def sigmoid_derivative(values):
     return values * (1 - values)
 
 
+# tanh函数的导数是f'(x) = 1 + f(x)^2
 def tanh_derivative(values):
     return 1. + values ** 2
 
@@ -163,10 +165,9 @@ class LstmNetwork():
 
     def y_list_is(self, y_list, loss_layer):
         """
-        Updates diffs by setting target sequence 
-        with corresponding loss layer. 
-        Will *NOT* update parameters.  To update parameters,
-        call self.lstm_param.apply_diff()
+        Updates diffs by setting target sequence with corresponding loss layer.
+        Will *NOT* update parameters.
+        To update parameters, call self.lstm_param.apply_diff()
         """
         assert len(y_list) == len(self.x_list)
         idx = len(self.x_list) - 1
