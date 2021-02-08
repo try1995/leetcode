@@ -61,24 +61,26 @@ def main():
 	)
 	'''
     # out-of memory generative training
-    steps_per_epoch = math.ceil(
-        (data.len_train - configs['data']['sequence_length']) / configs['training']['batch_size'])
-    model.train_generator(
-        data_gen=data.generate_train_batch(
-            seq_len=configs['data']['sequence_length'],
-            batch_size=configs['training']['batch_size'],
-            normalise=configs['data']['normalise']
-        ),
-        epochs=configs['training']['epochs'],
-        batch_size=configs['training']['batch_size'],
-        steps_per_epoch=steps_per_epoch,
-        save_dir=configs['model']['save_dir']
-    )
+    # steps_per_epoch = math.ceil(
+    #     (data.len_train - configs['data']['sequence_length']) / configs['training']['batch_size'])
+    # model.train_generator(
+    #     data_gen=data.generate_train_batch(
+    #         seq_len=configs['data']['sequence_length'],
+    #         batch_size=configs['training']['batch_size'],
+    #         normalise=configs['data']['normalise']
+    #     ),
+    #     epochs=configs['training']['epochs'],
+    #     batch_size=configs['training']['batch_size'],
+    #     steps_per_epoch=steps_per_epoch,
+    #     save_dir=configs['model']['save_dir']
+    # )
 
     x_test, y_test = data.get_test_data(
         seq_len=configs['data']['sequence_length'],
         normalise=configs['data']['normalise']
     )
+
+    model.load_model(os.path.join(configs['model']['save_dir'], "07022021-150019-e2.h5"))
 
     predictions = model.predict_sequences_multiple(x_test, configs['data']['sequence_length'],
                                                    configs['data']['sequence_length'])

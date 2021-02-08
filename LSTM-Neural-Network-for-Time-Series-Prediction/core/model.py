@@ -99,7 +99,7 @@ class Model():
         # Predict sequence of 50 steps before shifting prediction run forward by 50 steps
         print('[Model] Predicting Sequences Multiple...')
         prediction_seqs = []
-        for i in range(int(len(data) / prediction_len)):
+        for i in range(int(len(data) / prediction_len)+1):
             curr_frame = data[i * prediction_len]
             predicted = []
             for j in range(prediction_len):

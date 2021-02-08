@@ -12,7 +12,7 @@
 		"sequence_length": 20,
 		"train_test_split": 0.85,
 		"normalise": true
-	},
+	}, 
 	"training": {
 		"epochs": 2,
 		"batch_size": 32
