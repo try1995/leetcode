@@ -43,3 +43,11 @@ tensorflow 库版本 1.13.1
 介绍期货价格可预测性理论
 介绍海龟交易法则
 介绍LSTM模型
+
+数据预处理：
+布林带指标选择mid，一共三种[upper,low],带宽2，周期20
+
+DMI指标共有+DI（即PDI，下同)、-DI（即MDI，下同)、ADX、ADXR四条线,也是它的四个参数值,它分为多空指标(+DI、-DI)和趋向指标(ADX、ADXR)两组指标.
+选择趋势指标
+
+["open", "high", "low", "close", "volume", "amt", "chg", "pct_chg", "oi", "oi_chg", "BIAS", "BOLL", "DMI_ADX", "DMI_ADXR", "EXPMA", "KDJ_K", "KDJ_D", "KDJ_J", "RSI", "MA", "MACD"]

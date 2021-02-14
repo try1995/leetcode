@@ -1,11 +1,11 @@
 {
 	"data": {
-		"filename": "RB9999.csv",
-		"columns": ["Close", "Volume", "Open", "High", "Low", "EXPMA"],
+		"filename": "RB.SHF.csv",
+		"columns": ["Close", "Open", "High", "Low",  "Volume", "Money",  "BIAS", "BOLL", "DMI_ADX", "DMI_ADXR", "EXPMA", "KDJ_K", "KDJ_D", "KDJ_J", "RSI", "MA", "MACD"],
 		"sequence_length": 20,
 		"train_test_split": 0.85,
 		"normalise": true,
-		"drop": false
+		"drop": true
 	},
 	"training": {
 		"epochs": 2,
@@ -20,12 +20,12 @@
 				"type": "lstm",
 				"neurons": 100,
 				"input_timesteps": 19,
-				"input_dim": 6,
+				"input_dim": 17,
 				"return_seq": true
 			},
 			{
 				"type": "dropout",
-				"rate": 0.05
+				"rate": 0.2
 			},
 			{
 				"type": "lstm",
@@ -39,7 +39,7 @@
 			},
 			{
 				"type": "dropout",
-				"rate": 0.05
+				"rate": 0.2
 			},
 			{
 				"type": "dense",

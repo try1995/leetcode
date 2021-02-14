@@ -50,7 +50,7 @@ class Model():
         print('[Model] Training Started')
         print('[Model] %s epochs, %s batch size' % (epochs, batch_size))
 
-        save_fname = os.path.join(save_dir, '%s-e%s.h5' % (dt.datetime.now().strftime('%d%m%Y-%H%M%S'), str(epochs)))
+        save_fname = os.path.join(save_dir, '%s-e%s.h5' % (dt.datetime.now().strftime('%Y%m%d-%H%M%S'), str(epochs)))
         callbacks = [
             EarlyStopping(monitor='val_loss', patience=2),
             ModelCheckpoint(filepath=save_fname, monitor='val_loss', save_best_only=True)

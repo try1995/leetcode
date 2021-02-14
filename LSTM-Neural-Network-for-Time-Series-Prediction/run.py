@@ -29,26 +29,27 @@ def plot_results_multiple(predicted_data, true_data, prediction_len):
     for i, data in enumerate(predicted_data):
         padding = [None for p in range(i * prediction_len)]
         plt.plot(padding + data, label='Prediction')
-        plt.legend()
+        plt.legend(loc='lower left', fontsize=1)
     plt.show()
 
 
 def main():
-    configs = json.load(open('config.json', 'r'))
+    configs = json.load(open('config2.json', 'r'))
     if not os.path.exists(configs['model']['save_dir']): os.makedirs(configs['model']['save_dir'])
 
     data = DataLoader(
         os.path.join('data', configs['data']['filename']),
         configs['data']['train_test_split'],
-        configs['data']['columns']
+        configs['data']['columns'],
+        configs['data']['drop']
     )
 
     model = Model()
     model.build_model(configs)
-    x, y = data.get_train_data(
-        seq_len=configs['data']['sequence_length'],
-        normalise=configs['data']['normalise']
-    )
+    # x, y = data.get_train_data(
+    #     seq_len=configs['data']['sequence_length'],
+    #     normalise=configs['data']['normalise']
+    # )
 
     '''
 	# in-memory training
@@ -61,26 +62,26 @@ def main():
 	)
 	'''
     # out-of memory generative training
-    # steps_per_epoch = math.ceil(
-    #     (data.len_train - configs['data']['sequence_length']) / configs['training']['batch_size'])
-    # model.train_generator(
-    #     data_gen=data.generate_train_batch(
-    #         seq_len=configs['data']['sequence_length'],
-    #         batch_size=configs['training']['batch_size'],
-    #         normalise=configs['data']['normalise']
-    #     ),
-    #     epochs=configs['training']['epochs'],
-    #     batch_size=configs['training']['batch_size'],
-    #     steps_per_epoch=steps_per_epoch,
-    #     save_dir=configs['model']['save_dir']
-    # )
+    steps_per_epoch = math.ceil(
+        (data.len_train - configs['data']['sequence_length']) / configs['training']['batch_size'])
+    model.train_generator(
+        data_gen=data.generate_train_batch(
+            seq_len=configs['data']['sequence_length'],
+            batch_size=configs['training']['batch_size'],
+            normalise=configs['data']['normalise']
+        ),
+        epochs=configs['training']['epochs'],
+        batch_size=configs['training']['batch_size'],
+        steps_per_epoch=steps_per_epoch,
+        save_dir=configs['model']['save_dir']
+    )
 
     x_test, y_test = data.get_test_data(
         seq_len=configs['data']['sequence_length'],
         normalise=configs['data']['normalise']
     )
 
-    model.load_model(os.path.join(configs['model']['save_dir'], "07022021-150019-e2.h5"))
+    # model.load_model(os.path.join(configs['model']['save_dir'], "07022021-150019-e2.h5"))
 
     predictions = model.predict_sequences_multiple(x_test, configs['data']['sequence_length'],
                                                    configs['data']['sequence_length'])

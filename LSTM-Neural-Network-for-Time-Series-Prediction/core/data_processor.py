@@ -1,13 +1,20 @@
 import math
 import numpy as np
 import pandas as pd
+from sklearn import preprocessing
+from time import time
 
 
-class DataLoader():
+class DataLoader:
+
     """A class for loading and transforming data for the lstm model"""
 
-    def __init__(self, filename, split, cols):
-        dataframe = pd.read_csv(filename)
+    def __init__(self, filename, split, cols, drop=False):
+        dataframe = pd.read_csv(filename, header=3, index_col=0).get(cols).dropna(how="any") if drop else pd.read_csv(filename, index_col=0).get(cols)
+        # 归一化
+        for col in cols:
+            if col not in ["Close", "Open", "High", "Low",  "Volume", "Money"]:
+                dataframe[col] = dataframe.get([col]).apply(lambda x:(x-x.min())/(x.max()-x.min()))
         i_split = int(len(dataframe) * split)
         self.data_train = dataframe.get(cols).values[:i_split]
         self.data_test = dataframe.get(cols).values[i_split:]
@@ -44,6 +51,7 @@ class DataLoader():
             x, y = self._next_window(i, seq_len, normalise)
             data_x.append(x)
             data_y.append(y)
+
         return np.array(data_x), np.array(data_y)
 
     def generate_train_batch(self, seq_len, batch_size, normalise):
@@ -72,15 +80,14 @@ class DataLoader():
         return x, y
 
     def normalise_windows(self, window_data, single_window=False):
-        '''Normalise window with a base value of zero'''
+        """Normalise window with a base value of zero"""
+        bis=6
         normalised_data = []
         window_data = [window_data] if single_window else window_data
         for window in window_data:
-            normalised_window = []
-            for col_i in range(window.shape[1]):
-                normalised_col = [((float(p) / float(window[0, col_i])) - 1) for p in window[:, col_i]]
-                normalised_window.append(normalised_col)
-            normalised_window = np.array(
-                normalised_window).T  # reshape and transpose array back into original multidimensional format
+            normalised_window = window.copy()
+            normalised_window[:, 0:bis] = window[:, 0:bis] / window[:, 0:bis][0] - 1
+            # normalised_window = window / window[0] - 1
+            # normalised_window = np.diff(np.log(window), axis=0)
             normalised_data.append(normalised_window)
         return np.array(normalised_data)
