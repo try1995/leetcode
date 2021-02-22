@@ -67,13 +67,14 @@ class Model():
         print('[Model] Training Completed. Model saved as %s' % save_fname)
         timer.stop()
 
-    def train_generator(self, data_gen, epochs, batch_size, steps_per_epoch, save_dir):
+    def train_generator(self, data_gen, epochs, batch_size, steps_per_epoch, save_dir, datetime_now):
+        print("正在训练%s日期前的全部数据"%datetime_now)
         timer = Timer()
         timer.start()
         print('[Model] Training Started')
         print('[Model] %s epochs, %s batch size, %s batches per epoch' % (epochs, batch_size, steps_per_epoch))
 
-        save_fname = os.path.join(save_dir, '%s-e%s.h5' % (dt.datetime.now().strftime('%d%m%Y-%H%M%S'), str(epochs)))
+        save_fname = os.path.join(save_dir, '%s-e%s.h5' % (datetime_now, str(epochs)))
         callbacks = [
             ModelCheckpoint(filepath=save_fname, monitor='loss', save_best_only=True)
         ]
@@ -99,7 +100,7 @@ class Model():
         # Predict sequence of 50 steps before shifting prediction run forward by 50 steps
         print('[Model] Predicting Sequences Multiple...')
         prediction_seqs = []
-        for i in range(int(len(data) / prediction_len)+1):
+        for i in range(int(len(data) / prediction_len)):
             curr_frame = data[i * prediction_len]
             predicted = []
             for j in range(prediction_len):

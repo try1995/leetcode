@@ -8,21 +8,23 @@ from time import time
 class DataLoader:
 
     """A class for loading and transforming data for the lstm model"""
-
-    def __init__(self, filename, split, cols, drop=False):
+    # 按照日期分割
+    def __init__(self, filename, cols, train_end_data, test_start_data, seq_len, test_data_num=250, drop=False):
         dataframe = pd.read_csv(filename, header=3, index_col=0).get(cols).dropna(how="any") if drop else pd.read_csv(filename, index_col=0).get(cols)
         # 归一化
         for col in cols:
             if col not in ["Close", "Open", "High", "Low",  "Volume", "Money"]:
                 dataframe[col] = dataframe.get([col]).apply(lambda x:(x-x.min())/(x.max()-x.min()))
-        i_split = int(len(dataframe) * split)
-        self.data_train = dataframe.get(cols).values[:i_split]
-        self.data_test = dataframe.get(cols).values[i_split:]
+        # # 训练数据取最开始数据到预测日期的前一个交易日
+        self.data_train = dataframe.loc[dataframe.index[0]:train_end_data].get(cols).values
+        # 测试数据要拼接一下训练最后的窗口数据
+        self.data_test = np.concatenate((self.data_train[-seq_len:], dataframe.loc[test_start_data:dataframe.index[-1]].get(cols).values[0:test_data_num]))
+        self.date_index = dataframe.loc[test_start_data:dataframe.index[-1]].index.values
         self.len_train = len(self.data_train)
         self.len_test = len(self.data_test)
         self.len_train_windows = None
 
-    def get_test_data(self, seq_len, normalise):
+    def get_test_data(self, seq_len, normalise, raw_data=False):
         """
         Create x, y test data windows
         Warning: batch method, not generative, make sure you have enough memory to
@@ -33,11 +35,17 @@ class DataLoader:
             data_windows.append(self.data_test[i:i + seq_len])
 
         data_windows = np.array(data_windows).astype(float)
+
+        # 原始数据
+        if raw_data:
+            y = data_windows[:, -1, [0]].ravel()
+
         data_windows = self.normalise_windows(data_windows, single_window=False) if normalise else data_windows
 
         x = data_windows[:, :-1]
-        y = data_windows[:, -1, [0]]
-        return x, y
+        if not raw_data:
+            y = data_windows[:, -1, [0]].ravel()
+        return x, y, self.date_index[:y.shape[0]]
 
     def get_train_data(self, seq_len, normalise):
         """
@@ -81,13 +89,13 @@ class DataLoader:
 
     def normalise_windows(self, window_data, single_window=False):
         """Normalise window with a base value of zero"""
-        bis=6
+        bis=2
         normalised_data = []
         window_data = [window_data] if single_window else window_data
         for window in window_data:
-            normalised_window = window.copy()
-            normalised_window[:, 0:bis] = window[:, 0:bis] / window[:, 0:bis][0] - 1
-            # normalised_window = window / window[0] - 1
+            # normalised_window = window.copy()
+            # normalised_window[:, 0:bis] = window[:, 0:bis] / window[:, 0:bis][0] - 1
+            normalised_window = window / window[0] - 1
             # normalised_window = np.diff(np.log(window), axis=0)
             normalised_data.append(normalised_window)
         return np.array(normalised_data)

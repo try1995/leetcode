@@ -1,9 +1,9 @@
 {
 	"data": {
 		"filename": "RB.SHF.csv",
-		"columns": ["Close", "Open", "High", "Low",  "Volume", "Money",  "BIAS", "BOLL", "DMI_ADX", "DMI_ADXR", "EXPMA", "KDJ_K", "KDJ_D", "KDJ_J", "RSI", "MA", "MACD"],
+		"columns": ["Close", "Volume", "BIAS", "BOLL", "DMI_ADX", "DMI_ADXR", "EXPMA", "KDJ_K", "KDJ_D", "KDJ_J", "RSI", "MA", "MACD"],
 		"sequence_length": 20,
-		"train_test_split": 0.85,
+		"test_data_num": 20,
 		"normalise": true,
 		"drop": true
 	},
@@ -20,7 +20,7 @@
 				"type": "lstm",
 				"neurons": 100,
 				"input_timesteps": 19,
-				"input_dim": 17,
+				"input_dim": 13,
 				"return_seq": true
 			},
 			{
