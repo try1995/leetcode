@@ -1,7 +1,7 @@
 {
 	"data": {
-		"filename": "RB.SHF.csv",
-		"columns": ["Close", "Volume"],
+		"filename": "my.csv",
+		"columns": ["Close", "Volume", "ATR"],
 		"sequence_length": 20,
 		"test_data_num": 20,
 		"normalise": true,
@@ -20,7 +20,7 @@
 				"type": "lstm",
 				"neurons": 100,
 				"input_timesteps": 19,
-				"input_dim": 2,
+				"input_dim": 3,
 				"return_seq": true
 			},
 			{

@@ -1,6 +1,6 @@
 {
 	"data": {
-		"filename": "RB.SHF.csv",
+		"filename": "my.csv",
 		"columns": ["Close", "Volume", "BIAS", "BOLL", "DMI_ADX", "DMI_ADXR", "EXPMA", "KDJ_K", "KDJ_D", "KDJ_J", "RSI", "MA", "MACD"],
 		"sequence_length": 20,
 		"test_data_num": 20,

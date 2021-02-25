@@ -10,7 +10,7 @@ class DataLoader:
     """A class for loading and transforming data for the lstm model"""
     # 按照日期分割
     def __init__(self, filename, cols, train_end_data, test_start_data, seq_len, test_data_num=250, drop=False):
-        dataframe = pd.read_csv(filename, header=3, index_col=0).get(cols).dropna(how="any") if drop else pd.read_csv(filename, index_col=0).get(cols)
+        dataframe = pd.read_csv(filename, index_col=0).get(cols).dropna(how="any") if drop else pd.read_csv(filename, index_col=0).get(cols)
         # 归一化
         for col in cols:
             if col not in ["Close", "Open", "High", "Low",  "Volume", "Money"]:
@@ -93,9 +93,9 @@ class DataLoader:
         normalised_data = []
         window_data = [window_data] if single_window else window_data
         for window in window_data:
-            # normalised_window = window.copy()
-            # normalised_window[:, 0:bis] = window[:, 0:bis] / window[:, 0:bis][0] - 1
-            normalised_window = window / window[0] - 1
+            normalised_window = window.copy()
+            normalised_window[:, 0:bis] = window[:, 0:bis] / window[:, 0:bis][0] - 1
+            # normalised_window = window / window[0] - 1
             # normalised_window = np.diff(np.log(window), axis=0)
             normalised_data.append(normalised_window)
         return np.array(normalised_data)
