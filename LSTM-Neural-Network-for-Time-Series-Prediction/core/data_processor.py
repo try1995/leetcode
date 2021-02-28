@@ -15,6 +15,10 @@ class DataLoader:
         for col in cols:
             if col not in ["Close", "Open", "High", "Low",  "Volume", "Money"]:
                 dataframe[col] = dataframe.get([col]).apply(lambda x:(x-x.min())/(x.max()-x.min()))
+            else:
+                # dataframe[col] = dataframe.get([col]).apply(lambda x: x /dataframe - 1))
+                # 不要用
+                # dataframe[col] = np.row_stack((np.NaN,dataframe.get([col]).apply(lambda x:np.diff(np.log(x),axis=0))))
         # # 训练数据取最开始数据到预测日期的前一个交易日
         self.data_train = dataframe.loc[dataframe.index[0]:train_end_data].get(cols).values
         # 测试数据要拼接一下训练最后的窗口数据
@@ -89,13 +93,12 @@ class DataLoader:
 
     def normalise_windows(self, window_data, single_window=False):
         """Normalise window with a base value of zero"""
-        bis=2
+        bis=3
         normalised_data = []
         window_data = [window_data] if single_window else window_data
         for window in window_data:
-            normalised_window = window.copy()
-            normalised_window[:, 0:bis] = window[:, 0:bis] / window[:, 0:bis][0] - 1
-            # normalised_window = window / window[0] - 1
-            # normalised_window = np.diff(np.log(window), axis=0)
+            # normalised_window = window.copy()
+            # normalised_window[:, 0:bis] = window[:, 0:bis] / window[:, 0:bis][0] - 1
+            normalised_window = window / window[0] - 1
             normalised_data.append(normalised_window)
         return np.array(normalised_data)

@@ -1,10 +1,10 @@
 {
 	"data": {
 		"filename": "my.csv",
-		"columns": ["Close", "Volume", "ATR"],
+		"columns": ["Close", "Volume", "Money","ATR","MACD","CMI"],
 		"sequence_length": 20,
-		"test_data_num": 20,
-		"normalise": true,
+		"test_data_num": 250,
+		"normalise": false,
 		"drop": true
 	},
 	"training": {
@@ -20,7 +20,7 @@
 				"type": "lstm",
 				"neurons": 100,
 				"input_timesteps": 19,
-				"input_dim": 3,
+				"input_dim": 6,
 				"return_seq": true
 			},
 			{
