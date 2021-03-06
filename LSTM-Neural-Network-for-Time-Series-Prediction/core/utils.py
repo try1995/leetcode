@@ -17,11 +17,13 @@ class Timer():
         print('Time taken: %s' % (end_dt - self.start_dt))
 
 
-def plot_results_multiple(predicted_data, true_data, prediction_len, data_index, raw_data=False):
-    fig = plt.figure(facecolor='white', figsize=(16, 9))
-    ax = fig.add_subplot(111)
+fig = plt.figure(facecolor='white', figsize=(16, 9))
+
+def plot_results_multiple(predicted_data, true_data, prediction_len, data_index, plt_index, raw_data=False):
+    ax = fig.add_subplot(3, 4, plt_index+1)
+    ax.yaxis.set_major_locator(plt.MultipleLocator(50))
     ax.plot(data_index, true_data, label='True Data')
-    tick_spacing = 20  # 设置密度，比如横坐标9个，设置这个为3,到时候横坐标上就显示 9/3=3个横坐标，
+    tick_spacing = 5  # 设置密度，比如横坐标9个，设置这个为3,到时候横坐标上就显示 9/3=3个横坐标，
     ax.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
     # Pad the list of predictions to shift it in the graph to it's correct start
     for i, data in enumerate(predicted_data):
@@ -32,7 +34,7 @@ def plot_results_multiple(predicted_data, true_data, prediction_len, data_index,
         plt.legend(loc='lower left', fontsize=8)
 
     plt.xticks(rotation=-30)  # 设置横坐标显示的角度，角度是逆时针
-    plt.show()
+    # plt.show()
 
 
 def plot_results(predicted_data, true_data):

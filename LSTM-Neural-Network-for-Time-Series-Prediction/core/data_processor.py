@@ -15,8 +15,6 @@ class DataLoader:
         for col in cols:
             if col not in ["Close", "Open", "High", "Low",  "Volume", "Money"]:
                 dataframe[col] = dataframe.get([col]).apply(lambda x:(x-x.min())/(x.max()-x.min()))
-            else:
-                # dataframe[col] = dataframe.get([col]).apply(lambda x: x /dataframe - 1))
                 # 不要用
                 # dataframe[col] = np.row_stack((np.NaN,dataframe.get([col]).apply(lambda x:np.diff(np.log(x),axis=0))))
         # # 训练数据取最开始数据到预测日期的前一个交易日
@@ -97,8 +95,8 @@ class DataLoader:
         normalised_data = []
         window_data = [window_data] if single_window else window_data
         for window in window_data:
-            # normalised_window = window.copy()
-            # normalised_window[:, 0:bis] = window[:, 0:bis] / window[:, 0:bis][0] - 1
-            normalised_window = window / window[0] - 1
+            normalised_window = window.copy()
+            normalised_window[:, 0:bis] = window[:, 0:bis] / window[:, 0:bis][0] - 1
+            # normalised_window = window / window[0] - 1
             normalised_data.append(normalised_window)
         return np.array(normalised_data)
