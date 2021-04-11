@@ -3,21 +3,22 @@ import numpy as np
 import pandas as pd
 from sklearn import preprocessing
 from time import time
-
+from .utils import check_columns
 
 class DataLoader:
 
     """A class for loading and transforming data for the lstm model"""
     # 按照日期分割
-    def __init__(self, filename, cols, train_end_data, test_start_data, seq_len, test_data_num=250, drop=False):
+    def __init__(self, filename, cols, train_end_data, test_start_data, seq_len, test_data_num=250, drop=False,split_normalise = True):
         dataframe = pd.read_csv(filename, index_col=0).get(cols).dropna(how="any") if drop else pd.read_csv(filename, index_col=0).get(cols)
-        # 归一化
-        for col in cols:
-            if col not in ["Close", "Open", "High", "Low",  "Volume", "Money"]:
-                dataframe[col] = dataframe.get([col]).apply(lambda x:(x-x.min())/(x.max()-x.min()))
-                # 不要用
-                # dataframe[col] = np.row_stack((np.NaN,dataframe.get([col]).apply(lambda x:np.diff(np.log(x),axis=0))))
-        # # 训练数据取最开始数据到预测日期的前一个交易日
+        # # 归一化
+        if split_normalise:
+            for col in cols:
+                if col not in ["Close", "Volume", "Money"]:
+                    dataframe[col] = dataframe.get([col]).apply(lambda x:(x-x.min())/(x.max()-x.min()))
+        cols = check_columns(dataframe, cols)
+        print(cols)
+        # 训练数据取最开始数据到预测日期的前一个交易日
         self.data_train = dataframe.loc[dataframe.index[0]:train_end_data].get(cols).values
         # 测试数据要拼接一下训练最后的窗口数据
         self.data_test = np.concatenate((self.data_train[-seq_len:], dataframe.loc[test_start_data:dataframe.index[-1]].get(cols).values[0:test_data_num]))
@@ -25,6 +26,7 @@ class DataLoader:
         self.len_train = len(self.data_train)
         self.len_test = len(self.data_test)
         self.len_train_windows = None
+        self.split_normalise = split_normalise
 
     def get_test_data(self, seq_len, normalise, raw_data=False):
         """
@@ -95,8 +97,10 @@ class DataLoader:
         normalised_data = []
         window_data = [window_data] if single_window else window_data
         for window in window_data:
-            normalised_window = window.copy()
-            normalised_window[:, 0:bis] = window[:, 0:bis] / window[:, 0:bis][0] - 1
-            # normalised_window = window / window[0] - 1
+            if self.split_normalise:
+                normalised_window = window.copy()
+                normalised_window[:, 0:bis] = window[:, 0:bis] / window[:, 0:bis][0] - 1
+            else:
+                normalised_window = window / window[0] - 1
             normalised_data.append(normalised_window)
         return np.array(normalised_data)

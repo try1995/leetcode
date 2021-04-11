@@ -24,21 +24,22 @@ def main():
     if not os.path.exists(configs['model']['save_dir']): os.makedirs(configs['model']['save_dir'])
 
     data = DataLoader(
-        os.path.join('data', configs['data']['filename']),
-        configs['data']['columns'],
+        os.path.join('data', filename),
+        columns,
         train_end_data,
         test_start_data,
         configs['data']['sequence_length'],
-        configs["data"]["test_data_num"],
-        configs['data']['drop']
+        test_data_num,
+        configs['data']['drop'],
+        split_normalise
     )
 
     model = Model()
-    model.build_model(configs)
+    model.build_model(configs, len(columns))
 
     x_test, y_test, data_index = data.get_test_data(
         seq_len=configs['data']['sequence_length'],
-        normalise=configs['data']['normalise'],
+        normalise=normalise,
         raw_data = raw_data
     )
 
@@ -49,7 +50,7 @@ def main():
             data_gen=data.generate_train_batch(
                 seq_len=configs['data']['sequence_length'],
                 batch_size=configs['training']['batch_size'],
-                normalise=configs['data']['normalise']
+                normalise=normalise
             ),
             epochs=configs['training']['epochs'],
             batch_size=configs['training']['batch_size'],
@@ -65,27 +66,45 @@ def main():
     # predictions = model.predict_sequence_full(x_test, configs['data']['sequence_length'])
     # predictions = model.predict_point_by_point(x_test)
     print(predictions)
-    plot_results_multiple(predictions, y_test, configs['data']['sequence_length'], data_index, plt_index, raw_data)
-    # plot_results(predictions, y_test)
+    plot_results_multiple(predictions, y_test, configs['data']['sequence_length'], data_index, plt_index, symbol_change_date,  raw_data)
+    # plotEpoch 1/2_results(predictions, y_test)
 
 
 if __name__ == '__main__':
+    # 配置
     config = 'config.json'
+    filename = "my2.csv"
     predict = True
-    raw_data = True
+    raw_data = False
+    split_normalise = True
+    normalise = True
+    test_data_num = 251
     ls_2018 = [['2017-12-29', '2018-01-02'], ['2018-01-30', '2018-01-31'], ['2018-02-27', '2018-02-28'], ['2018-03-29', '2018-03-30'], ['2018-04-27', '2018-05-02'],['2018-05-30', '2018-05-31'], ['2018-06-28', '2018-06-29'], ['2018-07-30', '2018-07-31'], ['2018-08-30', '2018-08-31'], ['2018-09-28', '2018-10-08'], ['2018-10-30', '2018-10-31'], ['2018-11-29', '2018-11-30']]
     ls_2019 = [['2018-12-28', '2019-01-02'], ['2019-01-30', '2019-01-31'], ['2019-02-27', '2019-02-28'], ['2019-03-28', '2019-03-29'], ['2019-04-30', '2019-05-06'], ['2019-05-30', '2019-05-31'], ['2019-06-27', '2019-06-28'], ['2019-07-30', '2019-07-31'], ['2019-08-29', '2019-08-30'], ['2019-09-30', '2019-10-08'], ['2019-10-30', '2019-10-31'], ['2019-11-28', '2019-11-29']]
     ls_2020 = [['2019-12-31', '2020-01-02'], ['2020-01-23', '2020-02-03'], ['2020-02-28', '2020-03-02'], ['2020-03-31', '2020-04-01'], ['2020-04-30', '2020-05-06'], ['2020-05-28', '2020-05-29'], ['2020-06-29', '2020-06-30'], ['2020-07-30', '2020-07-31'], ['2020-08-28', '2020-08-31'], ['2020-09-30', '2020-10-09'], ['2020-10-29', '2020-10-30'], ['2020-11-27', '2020-11-30']]
-    for i, ls in enumerate(ls_2018):
-        # 20180228，20180629
-        # 20201009
-        plt_index = i
-        train_end_data, test_start_data = ls
+    # for i, ls in enumerate(ls_2019):
+    #     # 20180228，20180629
+    #     # 20201009
+    #     plt_index = i
+    #     train_end_data, test_start_data = ls
+    #     main()
+    plt_index = 0
+    train_end_data, test_start_data = ['2019-12-31', '2020-01-02']
+    symbol_change_date = ["2020-03-23", "2020-08-24"]
+    ##################################################################################
+    combinatorial = 3
+    ls_indicators = [cmcm, qs, nl, cjl, jx, lj, qt, lx, gx, ts, tb]
+    str_indicator = ["cmcm", "qs", "nl", "cjl", "jx", "lj", "qt", "lx", "gx", "ts", "tb"]
+    str_ls, ls = combinatorial_ls(str_indicator[1:], ls_indicators[1:], combinatorial)
+    for i, j in enumerate(ls):
+        name_ = "_".join(str_ls[i])
+        columns = ['Close', 'Volume', 'Money']
+        columns += util_ls(j)
         main()
-    configs = json.load(open(config, 'r'))
-    plt.savefig("./picture/%s"%len(configs['data']['columns']),bbox_inches='tight')
-    plt.show()
-        # ['2016-12-30', '2017-01-03'], ['2017-01-26', '2017-02-03'], ['2017-02-28', '2017-03-01'],
-        # ['2017-03-31', '2017-04-05'], ['2017-04-28', '2017-05-02'], ['2017-05-31', '2017-06-01'],
-        # ['2017-06-30', '2017-07-03'], ['2017-07-31', '2017-08-01'], ['2017-08-31', '2017-09-01'],
-        # ['2017-09-29', '2017-10-09'], ['2017-10-31', '2017-11-01'], ['2017-11-30', '2017-12-01'],
+        configs = json.load(open(config, 'r'))
+        plt.savefig("./picture/%s/%s_%s_%d%d%d"%(combinatorial,name_, "ls_2020", predict, raw_data, split_normalise),bbox_inches='tight')
+    # plt.show()
+    # ['2016-12-30', '2017-01-03'], ['2017-01-26', '2017-02-03'], ['2017-02-28', '2017-03-01'],
+    # ['2017-03-31', '2017-04-05'], ['2017-04-28', '2017-05-02'], ['2017-05-31', '2017-06-01'],
+    # ['2017-06-30', '2017-07-03'], ['2017-07-31', '2017-08-01'], ['2017-08-31', '2017-09-01'],
+    # ['2017-09-29', '2017-10-09'], ['2017-10-31', '2017-11-01'], ['2017-11-30', '2017-12-01'],\
